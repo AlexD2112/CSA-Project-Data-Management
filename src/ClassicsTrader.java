@@ -45,16 +45,16 @@ public class ClassicsTrader {
         CSV_Path = path;
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+        System.out.print("Cars saved: " + 0 + "/" + doubleArray.length + "\r");
         if (includeHeader) {
             writer.write("Make,Model,Year,HP,Mileage,Price,Matching Serial Numbers\n");
         }
+        int j = 0;
         for (Object[] array : doubleArray) {
             int arrayLen = array.length;
             int i = 0;
             for (Object obj : array) {
-                System.out.println(i + " " + arrayLen);
                 if (i == arrayLen - 1) {
-                    System.out.println("Last element");
                     writer.write(obj.toString());
                     break;
                 }
@@ -62,8 +62,13 @@ public class ClassicsTrader {
                 i++;
             }
             writer.write("\n");
+            j++;
+            System.out.print("Cars saved: " + j + "/" + doubleArray.length + "\r");
+            System.out.flush();
         }
         writer.close();
+        System.out.println("Cars saved: " + j + "/" + doubleArray.length);
+        System.out.println("Saved to " + path);
     }
 
     /**
@@ -95,6 +100,7 @@ public class ClassicsTrader {
         saveToCSV(path, true);
     }
 
+    //Grab data for a single car from ClassicsTrader
     private Object[][] grabAllData(int numCars) {
         Object[][] doubleArray = new Object[numCars][];
         String HTML;
@@ -106,9 +112,10 @@ public class ClassicsTrader {
         }
 
         //Get links from the search page
+        System.out.print("Cars grabbed: " + 0 + "/" + numCars + "\r");
+        System.out.flush();
         String[] links = getLinksOnPage(HTML);
-        links[0] = "https://www.classic-trader.com/uk/cars/listing/ferrari/testarossa/testarossa/1985/332971";
-        //Set first element to be https://www.classic-trader.com/uk/cars/listing/alfa-romeo/giulietta/giulietta-sz/1960/332964
+        System.out.print("Cars grabbed: " + links.length + "/" + numCars + "\r");
         int page = 2;
         while (links.length < numCars) {
             String newHTML;
@@ -122,28 +129,37 @@ public class ClassicsTrader {
             System.arraycopy(links, 0, combinedLinks, 0, links.length);
             System.arraycopy(newLinks, 0, combinedLinks, links.length, newLinks.length);
             links = combinedLinks;
+            System.out.print("Cars grabbed: " + links.length + "/" + numCars + "\r");
+            System.out.flush();
         }
 
         if (links.length > numCars) {
             links = Arrays.copyOfRange(links, 0, numCars);
         }
 
+        System.out.println("Cars grabbed: " + links.length + "/" + numCars);
+
         //Grab Car Data and put it in the array
         int j = 0;
+        System.out.print("Cars loaded: " + 0 + "/" + numCars + "\r");
+        System.out.flush();
         for (String link : links) {
-            System.out.println((j+1) + "/" + numCars + " " + link);
+            //System.out.println((j+1) + "/" + numCars + " " + link); // <--- UNCOMMENT THIS to see all links
             doubleArray[j] = grabCarData(link);
+            System.out.print("Cars loaded: " + (j+1) + "/" + numCars + "\r");
+            System.out.flush();
             j++;
         }
+        System.out.println("Cars loaded: " + j + "/" + numCars);
 
         //Log double array
-        for (Object[] array : doubleArray) {
-            System.out.println(Arrays.toString(array));
-        }
+//        for (Object[] array : doubleArray) {
+//            System.out.println(Arrays.toString(array));
+//        }
 
         return doubleArray;
     }
-    //Grab data for a single car from ClassicsTrader
+
 
     private String[] getLinksOnPage(String HTML) {
         //Create a new map of strings to arrays of ints
