@@ -161,6 +161,7 @@ public class ClassicsTrader {
     }
 
 
+    //Returns an array of links on the page
     private String[] getLinksOnPage(String HTML) {
         //Create a new map of strings to arrays of ints
         Map<String, int[]> map = new HashMap<>();
@@ -293,6 +294,7 @@ public class ClassicsTrader {
         return carArray;
     }
 
+    // Returns the mileage in km
     private static int getMileage(String mileageStr) {
         int mileage;
         if (mileageStr.contains("mls")) {
@@ -303,6 +305,7 @@ public class ClassicsTrader {
         return mileage;
     }
 
+    //Returns the value of the attribute
     private String getAttrValue(String HTML, String attr) {
         int attrIndex = HTML.indexOf(attr);
         int dtCloseIndex = HTML.indexOf("</dt>", attrIndex);
