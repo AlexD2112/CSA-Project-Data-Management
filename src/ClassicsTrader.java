@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.Arrays.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 
 public class ClassicsTrader {
-    private static final String CT_SEARCH_URL = "https://www.classic-trader.com/uk/cars/search";
-    private static final String CSV_Path = "src/ClassicsTrader.csv";
+    private final String CT_SEARCH_URL = "https://www.classic-trader.com/uk/cars/search";
+    private String CSV_Path = "src/ClassicsTrader.csv";
+    private final Object[][] doubleArray;
     /**
      * Create new ClassicsTrader class grabbing 100 cars
      *
@@ -16,7 +20,7 @@ public class ClassicsTrader {
      * and storing it in a CSV file.
      */
     public ClassicsTrader() {
-        this(100);
+        this(10);
     }
     /**
      * Create new ClassicsTrader class grabbing numCars cars
@@ -27,8 +31,70 @@ public class ClassicsTrader {
      * @param numCars The number of cars to grab
      */
     public ClassicsTrader(int numCars) {
-        Object[][] doubleArray = grabAllData(numCars);
+        doubleArray = grabAllData(numCars);
     }
+
+    /**
+     * Save the data to a CSV file
+     *
+     * @param path The path to save the CSV file to
+     * @param includeHeader Whether or not to include the header in the CSV file
+     * @throws IOException If there is an error writing to the CSV file
+     */
+    public void saveToCSV(String path, boolean includeHeader) throws IOException {
+        CSV_Path = path;
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+        if (includeHeader) {
+            writer.write("Make,Model,Year,HP,Mileage,Price,Matching Serial Numbers\n");
+        }
+        for (Object[] array : doubleArray) {
+            int arrayLen = array.length;
+            int i = 0;
+            for (Object obj : array) {
+                System.out.println(i + " " + arrayLen);
+                if (i == arrayLen - 1) {
+                    System.out.println("Last element");
+                    writer.write(obj.toString());
+                    break;
+                }
+                writer.write(obj.toString() + ",");
+                i++;
+            }
+            writer.write("\n");
+        }
+        writer.close();
+    }
+
+    /**
+     * Save the data to a CSV file, with a header and path to src/ClassicsTrader.csv
+     *
+     * @throws IOException If there is an error writing to the CSV file
+     */
+    public void saveToCSV() throws IOException {
+        saveToCSV(CSV_Path, true);
+    }
+
+    /**
+     * Save the data to a CSV file, with a path to src/ClassicsTrader.csv
+     *
+     * @param includeHeader Whether or not to include the header in the CSV file
+     * @throws IOException If there is an error writing to the CSV file
+     */
+    public void saveToCSV(boolean includeHeader) throws IOException {
+        saveToCSV(CSV_Path, includeHeader);
+    }
+
+    /**
+     * Save the data to a CSV file, with a header
+     *
+     * @param path The path to save the CSV file to
+     * @throws IOException If there is an error writing to the CSV file
+     */
+    public void saveToCSV(String path) throws IOException {
+        saveToCSV(path, true);
+    }
+
     private Object[][] grabAllData(int numCars) {
         Object[][] doubleArray = new Object[numCars][];
         String HTML;
